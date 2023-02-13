@@ -1,0 +1,20 @@
+---
+- name: Hung thread alert playbook
+  hosts: appserver
+  gather_facts: no
+  vars:
+    script_path: /path/to
+    recipient_email: your_email@example.com
+    backup_folder: /path/to/backup
+
+  tasks:
+    - name: Check for hung threads
+      shell: "{{ script_path }}/check_hung_threads.sh {{ recipient_email }} {{ backup_folder }}"
+      register: hung_thread_result
+
+    - name: Send email notification
+      mail:
+        subject: "Hung thread alert on Appserver"
+        body: "{{ hung_thread_result.stdout }}"
+        to: "{{ recipient_email }}"
+      when: hung_thread_result.stdout != ""
